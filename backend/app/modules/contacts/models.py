@@ -1,17 +1,19 @@
 import uuid
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean, DateTime, Enum, String, func
+from sqlalchemy import DateTime, ForeignKey, String, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
-from app.modules.users.enums import UserRole
-from app.modules.contacts.models import Contact
+from app.modules.contacts.enums import ContactStatus
+
+if TYPE_CHECKING:
+    from app.modules.users.models import User
 
 
-class User(Base):
-    __tablename__ = "users"
+class Contact(Base):
+    __tablename__ = "contacts"
 
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
@@ -24,33 +26,33 @@ class User(Base):
         nullable=False,
     )
 
-    apellido: Mapped[str] = mapped_column(
-        String(100),
-        nullable=False,
-    )
-
-    email: Mapped[str] = mapped_column(
+    email: Mapped[str | None] = mapped_column(
         String(255),
-        unique=True,
-        nullable=False,
+        nullable=True,
         index=True,
     )
 
-    password_hash: Mapped[str] = mapped_column(
-        String(255),
-        nullable=False,
+    telefono: Mapped[str | None] = mapped_column(
+        String(50),
+        nullable=True,
     )
 
-    role: Mapped[UserRole] = mapped_column(
-        Enum(UserRole),
-        nullable=False,
-        default=UserRole.VENTAS,
+    empresa: Mapped[str | None] = mapped_column(
+        String(150),
+        nullable=True,
     )
 
-    is_active: Mapped[bool] = mapped_column(
-        Boolean,
+    status: Mapped[ContactStatus] = mapped_column(
+        String(30),
         nullable=False,
-        default=True,
+        default=ContactStatus.NUEVO,
+    )
+
+    owner_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id"),
+        nullable=False,
+        index=True,
     )
 
     created_at: Mapped[DateTime] = mapped_column(
@@ -66,6 +68,6 @@ class User(Base):
         nullable=False,
     )
 
-    contacts: Mapped[list["Contact"]] = relationship(
-        back_populates="owner",
-    )    
+    owner: Mapped["User"] = relationship(
+        back_populates="contacts",
+    )
