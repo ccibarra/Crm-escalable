@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Boolean, DateTime, String, func
+from sqlalchemy import Boolean, DateTime, Enum, String, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -40,9 +40,9 @@ class User(Base):
     )
 
     role: Mapped[UserRole] = mapped_column(
-        String(20),
+        Enum(UserRole),
         nullable=False,
-        default=UserRole="VENTAS",
+        default=UserRole.VENTAS,
     )
 
     is_active: Mapped[bool] = mapped_column(
@@ -62,4 +62,4 @@ class User(Base):
         server_default=func.now(),
         onupdate=func.now(),
         nullable=False,
-    )   
+    )
