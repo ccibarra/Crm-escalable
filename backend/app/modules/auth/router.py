@@ -18,6 +18,9 @@ from app.modules.auth.service import (
 from app.core.dependencies import get_current_user
 from app.modules.users.models import User
 
+# teportal borrar
+from app.core.dependencies import require_admin
+
 
 router = APIRouter(
     prefix="/api/v1/auth",
@@ -86,4 +89,15 @@ def login(
 def get_me(
     current_user: User = Depends(get_current_user),
 ):
-    return current_user    
+    return current_user
+
+# teportal borrar
+@router.get("/admin-test")
+def admin_test(
+    current_user: User = Depends(require_admin),
+):
+    return {
+        "message": "Acceso permitido",
+        "user": current_user.email,
+        "role": current_user.role,
+    }        
