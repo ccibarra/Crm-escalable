@@ -1,0 +1,9 @@
+from enum import Enum
+
+
+class DealStage(str, Enum):
+    PROSPECTO = "PROSPECTO"
+    CONTACTADO = "CONTACTADO"
+    PROPUESTA = "PROPUESTA"
+    CERRADO_GANADO = "CERRADO_GANADO"
+    PERDIDO = "PERDIDO"

@@ -9,6 +9,8 @@ from app.core.config import settings
 from app.core.database import Base
 from app.modules.users import models as user_models
 from app.modules.contacts import models as contact_models
+from app.modules.deals import models as deal_models
+from app.modules.interactions import models as interaction_models
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

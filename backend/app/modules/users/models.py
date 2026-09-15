@@ -9,6 +9,10 @@ from app.core.database import Base
 from app.modules.users.enums import UserRole
 from app.modules.contacts.models import Contact
 
+if TYPE_CHECKING:
+    from app.modules.deals.models import Deal
+    from app.modules.interactions.models import Interaction 
+
 
 class User(Base):
     __tablename__ = "users"
@@ -68,4 +72,12 @@ class User(Base):
 
     contacts: Mapped[list["Contact"]] = relationship(
         back_populates="owner",
+    )
+
+    deals: Mapped[list["Deal"]] = relationship(
+        back_populates="owner",
     )    
+
+    interactions: Mapped[list["Interaction"]] = relationship(
+        back_populates="owner",
+    )

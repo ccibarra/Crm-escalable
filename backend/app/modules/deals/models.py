@@ -1,21 +1,21 @@
 import uuid
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, ForeignKey, String, func
+from sqlalchemy import DateTime, ForeignKey, String, Text, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
-from app.modules.contacts.enums import ContactStatus
+from app.modules.deals.enums import DealStage
 
 if TYPE_CHECKING:
+    from app.modules.contacts.models import Contact
     from app.modules.users.models import User
-    from app.modules.deals.models import Deal
     from app.modules.interactions.models import Interaction
 
 
-class Contact(Base):
-    __tablename__ = "contacts"
+class Deal(Base):
+    __tablename__ = "deals"
 
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
@@ -23,31 +23,11 @@ class Contact(Base):
         default=uuid.uuid4,
     )
 
-    nombre: Mapped[str] = mapped_column(
-        String(100),
+    contact_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("contacts.id"),
         nullable=False,
-    )
-
-    email: Mapped[str | None] = mapped_column(
-        String(255),
-        nullable=True,
         index=True,
-    )
-
-    telefono: Mapped[str | None] = mapped_column(
-        String(50),
-        nullable=True,
-    )
-
-    empresa: Mapped[str | None] = mapped_column(
-        String(150),
-        nullable=True,
-    )
-
-    status: Mapped[ContactStatus] = mapped_column(
-        String(30),
-        nullable=False,
-        default=ContactStatus.NUEVO,
     )
 
     owner_id: Mapped[uuid.UUID] = mapped_column(
@@ -55,6 +35,22 @@ class Contact(Base):
         ForeignKey("users.id"),
         nullable=False,
         index=True,
+    )
+
+    title: Mapped[str] = mapped_column(
+        String(150),
+        nullable=False,
+    )
+
+    description: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True,
+    )
+
+    stage: Mapped[DealStage] = mapped_column(
+        String(30),
+        nullable=False,
+        default=DealStage.PROSPECTO,
     )
 
     created_at: Mapped[DateTime] = mapped_column(
@@ -70,14 +66,14 @@ class Contact(Base):
         nullable=False,
     )
 
-    owner: Mapped["User"] = relationship(
-        back_populates="contacts",
+    contact: Mapped["Contact"] = relationship(
+        back_populates="deals",
     )
 
-    deals: Mapped[list["Deal"]] = relationship(
-        back_populates="contact",
+    owner: Mapped["User"] = relationship(
+        back_populates="deals",
     )
 
     interactions: Mapped[list["Interaction"]] = relationship(
-    back_populates="contact",
+    back_populates="deal",
 )
